@@ -11,7 +11,7 @@
         }"
         @click="updateActiveGroup(group.key)"
       >
-        <span :title="group.title" class="v3-icon">
+        <span :title="groupNames[group.key]" class="v3-icon">
           <img :src="icons[group.key]" alt="" />
         </span>
       </button>
@@ -60,6 +60,18 @@ export default defineComponent({
       () => state.options.staticTexts.placeholder || ''
     )
 
+    // Build groupNames as in Body.vue
+    const groupNames = { ...state.options.groupNames }
+    if (state.options.additionalGroups) {
+      Object.keys(state.options.additionalGroups).forEach((k) => {
+        if (state.options.groupNames[k]) {
+          groupNames[k] = state.options.groupNames[k]
+        } else {
+          groupNames[k] = snakeToCapitalizedCase(k)
+        }
+      })
+    }
+
     const searchValue = computed({
       get: () => state.search,
       set: (value: string) => updateSearch(value),
@@ -103,7 +115,8 @@ export default defineComponent({
         flags,
         ...state.options.groupIcons,
         recent,
-      } as Record<string, string>,
+      },
+      groupNames,
     }
   },
 })
